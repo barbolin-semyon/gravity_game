@@ -2,10 +2,19 @@ package com.mygdx.game
 
 import com.badlogic.gdx.Game
 
+/**
+ * Мозги игроого процесса
+ * @param initLevel начальный уровень
+ * @param onSaveLevel callback функция, вызываемая при сохранения уровня игры
+ */
 class MyGame(
     val initLevel: Int,
     val onSaveLevel: (Int) -> Unit
 ) : Game() {
+
+    /**
+     * Создание переменных с экранами
+     */
     private lateinit var gameOverScreen: GameOverScreen
     private lateinit var gameScreen: GameScreen
     private lateinit var menuScreen: MenuScreen
@@ -14,6 +23,14 @@ class MyGame(
     private lateinit var levelsScreen: LevelsScreen
     val viewModel = GameViewModel()
     override fun create() {
+
+        /**
+         * Инициализация каждого экрана. Все экраны получают в качестве аргумента
+         * callback функцию (функция обратного вызова), позволяющая вернутся назад в коде
+         * и выполнить определенные действия - открыть другой экран.
+         * При исользовании setScreen экраны переключаются между собой, предыдущий экран
+         * вызывает метод onHide
+         */
         viewModel.currentLevel = initLevel
         viewModel.maxLevel = initLevel
 

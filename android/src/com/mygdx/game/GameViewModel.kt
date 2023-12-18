@@ -2,6 +2,9 @@ package com.mygdx.game
 
 import kotlinx.coroutines.flow.MutableStateFlow
 
+/**
+ * Класс ViewModel программы - содержит в себе параметры игры
+ */
 class GameViewModel {
     var maxLevel: Int = 1
     var currentLevel: Int = 1

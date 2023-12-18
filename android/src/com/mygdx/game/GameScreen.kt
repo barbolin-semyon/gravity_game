@@ -18,6 +18,20 @@ import kotlin.concurrent.schedule
 import kotlin.properties.Delegates
 
 
+/**
+ * Класс экрана игры.
+ * На вход получает [GameViewModel] и [onGameOver] и [onWin], которые вызываются при завершении игры: выигрыше и проигрыше
+ *
+ * Наследуется от [Screen] и [InputProcessor], переоределяет методы [show], [render], [resize], [dispose]
+ *  * а также переопределяет методы [keyDown], [keyUp], [keyTyped], [touchDown], [touchUp], [touchDragged], [mouseMoved], [scrolled]
+ *  *
+ *  * Мы используем в основном методы:
+ *  * [show] - вызывается при открытии экрана
+ *  * [render] - вызывается каждый кадр
+ *  * [dispose]  - вызывается при закрытии экрана
+ *  * [hide] - вызывается при закрытии экрана
+ *  * [onTouchDown] - вызывается при нажатии на экран
+ *  */
 class GameScreen(
     val viewModel: GameViewModel,
     val onGameOver: () -> Unit,
@@ -28,23 +42,11 @@ class GameScreen(
         data.setScale(10f)
     }
 
+    // Инициализация текстур
     private var platformTexture: Texture = Texture(Gdx.files.internal("platform.png"))
     private var platformLongTexture: Texture = Texture(Gdx.files.internal("long_platform.png"))
     private var ballTexture: Texture = Texture(Gdx.files.internal("ball.png"))
-    private var ballSprite: Sprite = Sprite(ballTexture)
-    private var platformSprite: Sprite = Sprite(platformTexture)
-    private var ballXSpeed by Delegates.notNull<Float>()
-    private var ballYSpeed by Delegates.notNull<Float>()
-    private var batch: SpriteBatch = SpriteBatch()
-    private var currentTouchX: Int? = null
-
-    var text = ""
-    val textX = 10f // Координата X для текста
-    val textY = Gdx.graphics.height - 10f // Координата Y для текста (от верхнего края экрана)
-
-    // Фон
     private var backgroundTexture: Texture = Texture(Gdx.files.internal("background.jpg"))
-
     // Монеты
     private var coins: MutableList<Vector2> = mutableListOf()
     private var coinTexture: Texture = Texture(Gdx.files.internal("coin.png"))
@@ -58,33 +60,47 @@ class GameScreen(
     private var coinGreenTexture: Texture = Texture(Gdx.files.internal("coin_green.png"))
     private var countToEndEffectsOfGreen: Int = 0
 
-    // Звук
-    private var coinSound: Sound = Gdx.audio.newSound(Gdx.files.internal("coin_sound.mp3"))
-    private var music: Music = Gdx.audio.newMusic(Gdx.files.internal("background_music.mp3"))
+    // Создание срайтов
+    private var ballSprite: Sprite = Sprite(ballTexture)
+    private var batch: SpriteBatch = SpriteBatch()
+    private var platformSprite: Sprite = Sprite(platformTexture)
 
+    // Создание необходимых переменных, инициализация ленивая (поздняя)
+    private var ballXSpeed by Delegates.notNull<Float>()
+    private var ballYSpeed by Delegates.notNull<Float>()
+    private var currentTouchX: Int? = null
     private var countCoins by Delegates.notNull<Int>()
     private var countRedCoin by Delegates.notNull<Int>()
     private var countGreenCoin by Delegates.notNull<Int>()
     private var speed by Delegates.notNull<Float>()
 
+    // Создание переменных для текста счета
+    var text = ""
+    val textX = 10f // Координата X для текста
+    val textY = Gdx.graphics.height - 10f // Координата Y для текста (от верхнего края экрана)
+
+    // Звук
+    private var coinSound: Sound = Gdx.audio.newSound(Gdx.files.internal("coin_sound.mp3"))
+    private var music: Music = Gdx.audio.newMusic(Gdx.files.internal("background_music.mp3"))
 
     override fun show() {
+        // Инициализация всех переменных
         countCoins = viewModel.params.countCoins
         countRedCoin = viewModel.params.countRedCoin
         countGreenCoin = viewModel.params.countGreenCoin
         speed = viewModel.params.speed
         ballXSpeed = speed
         ballYSpeed = speed
-
-        Gdx.input.inputProcessor = this
         text = "0 / ${countCoins + countRedCoin}"
 
+        // Включение отслеживания активности юзера (клики, перемещения и тд)
+        Gdx.input.inputProcessor = this
+
+        // Устанока начального значения платформы и шаров
         platformSprite.x = Gdx.graphics.width / 2f
         ballSprite.setPosition(200f, 300f)
 
         // Создание монет в случайных позициях
-
-
         for (i in 0 until countCoins) {
             coins.add(
                 Vector2(
@@ -100,6 +116,7 @@ class GameScreen(
             )
         }
 
+        // Создание красных монет в случайных позициях
         for (i in 0 until countRedCoin) {
             coinsRed.add(
                 Vector2(
@@ -115,6 +132,7 @@ class GameScreen(
             )
         }
 
+        // Создание зеленых монет в случайных позициях
         for (i in 0 until countGreenCoin) {
             coinsGreen.add(
                 Vector2(
@@ -130,28 +148,36 @@ class GameScreen(
             )
         }
 
-        // Настройка звука
+        // Настройка звука (ставим - повторение после окончания и включаем музыку)
         music.isLooping = true
         music.play()
     }
 
     override fun render(delta: Float) {
+        // Чистка экрана - пустое полотно
         Gdx.gl.glClearColor(0f, 0f, 0f, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
 
         // Обработка сбора монет
         coins.forEach { coin ->
+            // Если монета внутри координат шара, то...
             if (
                 ballSprite.y + ballSprite.height / 2 > coin.y &&
                 ballSprite.y - ballSprite.height / 2 < coin.y &&
                 ballSprite.x + ballSprite.width / 2 > coin.x &&
                 ballSprite.x - ballSprite.width / 2 < coin.x
             ) {
+                // Включаем звук монеты
                 coinSound.play()
+
+                // Удаляем данную монету из списка
                 coins = coins.filter { it.x != coin.x && it.y != coin.y }.toMutableList()
+
+                // Обновляем текст счета
                 text =
                     "${countCoins + countRedCoin - (coins.size + coinsRed.size)} / ${countCoins + countRedCoin}"
 
+                // Уменьшаем скорость, если она выше заданной
                 if (ballXSpeed > speed) {
                     ballXSpeed -= 10f
                 }
@@ -164,7 +190,12 @@ class GameScreen(
                 if (ballYSpeed < -speed) {
                     ballYSpeed += 10f
                 }
+
+                // Уменьшаем счет монет (countToEndEffectsOfGreen считает 3 монеты после попадания
+                // зеленой монеты и убирает эффект большой платформы)
                 countToEndEffectsOfGreen--
+
+                // Если данный счет равен нулю, то мы уменьшаем платформу (буст закончился)
                 if (countToEndEffectsOfGreen == 0) {
                     platformSprite = Sprite(platformTexture)
                     platformSprite.x = coin.x
@@ -172,6 +203,7 @@ class GameScreen(
             }
         }
 
+        // Аналогично для красных монет, только тут скорость увеличиваем
         coinsRed.forEach { coin ->
             if (
                 ballSprite.y + ballSprite.height / 2 > coin.y &&
@@ -206,6 +238,8 @@ class GameScreen(
             }
         }
 
+        // Аналогично для зеленых монет, только тут увеличиваем платформу, а
+        // [countToEndEffectsOfGreen] ставим равной 3
         coinsGreen.forEach { coin ->
             if (
                 ballSprite.y + ballSprite.height / 2 > coin.y &&
@@ -248,6 +282,7 @@ class GameScreen(
             Gdx.graphics.height.toFloat()
         )
 
+        // Рисование текста (счет)
         font.draw(batch, text, textX, textY)
 
         // Отображение монет
@@ -255,10 +290,12 @@ class GameScreen(
             batch.draw(coinTexture, coin.x, coin.y)
         }
 
+        // Рисуем красные монеты
         for (coin in coinsRed) {
             batch.draw(coinRedTexture, coin.x, coin.y)
         }
 
+        // Рисуем зеленые монеты
         for (coin in coinsGreen) {
             batch.draw(coinGreenTexture, coin.x, coin.y)
         }
@@ -268,6 +305,7 @@ class GameScreen(
         platformSprite.draw(batch)
         batch.end()
 
+        // Если сумма обычных и красных монет равна 0, мы победили в раунде
         if (coins.size + coinsRed.size == 0) {
             onWin()
         }
@@ -290,6 +328,7 @@ class GameScreen(
     override fun resume() {
     }
 
+    // Сброс игры
     override fun hide() {
         music.stop()
         ballXSpeed = 5f
@@ -300,6 +339,7 @@ class GameScreen(
         coinsGreen.clear()
     }
 
+    // Завершение игры, освобождаем память, заолненная текстурами и музыкой
     override fun dispose() {
         ballTexture.dispose()
         platformTexture.dispose()
@@ -322,6 +362,7 @@ class GameScreen(
         return true
     }
 
+    // Обработка нажатий
     override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
         currentTouchX = screenX
         return true
@@ -336,6 +377,7 @@ class GameScreen(
         return false
     }
 
+    // Включается, если мы провели пальцем по экрану, а не росто нажали
     override fun touchDragged(screenX: Int, screenY: Int, pointer: Int): Boolean {
         if (currentTouchX != null) {
             val deltaX = screenX - currentTouchX!! // Вычисляем изменение координаты X

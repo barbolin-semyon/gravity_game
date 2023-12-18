@@ -3,19 +3,31 @@ package com.mygdx.game
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.InputProcessor
 import com.badlogic.gdx.Screen
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Vector3
 
+/**
+ * Класс экрана меню.
+ * На вход получает функции [onStart] и [onLevel] которые вызываются при нажатии на кнопки
+ *
+ * Наследуется от [Screen] и [InputProcessor], переоределяет методы [show], [render], [resize], [dispose]
+ *  * а также переопределяет методы [keyDown], [keyUp], [keyTyped], [touchDown], [touchUp], [touchDragged], [mouseMoved], [scrolled]
+ *  *
+ *  * Мы используем в основном методы:
+ *  * [show] - вызывается при открытии экрана
+ *  * [render] - вызывается каждый кадр
+ *  * [dispose]  - вызывается при закрытии экрана
+ *  * [hide] - вызывается при закрытии экрана
+ *  * [onTouchDown] - вызывается при нажатии на экран
+ *  */
 class MenuScreen(
     val onStart: () -> Unit,
     val onLevel: () -> Unit,
 ) : Screen, InputProcessor {
     private var batch: SpriteBatch = SpriteBatch()
-    private var font: BitmapFont = BitmapFont()
 
     private var backgroundTexture: Texture = Texture(Gdx.files.internal("background_menu.png"))
     val buttonTexture = Texture(Gdx.files.internal("button_start.png"))
