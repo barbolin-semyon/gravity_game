@@ -1,4 +1,4 @@
-package com.mygdx.game
+package com.mygdx.gravity_game
 
 import com.badlogic.gdx.Game
 
@@ -15,13 +15,13 @@ class MyGame(
     /**
      * Создание переменных с экранами
      */
-    private lateinit var gameOverScreen: GameOverScreen
-    private lateinit var gameScreen: GameScreen
+    private lateinit var gameOverGravityScreen: GameOverGravityScreen
+    private lateinit var gameGravityScreen: GameGravityScreen
     private lateinit var menuScreen: MenuScreen
-    private lateinit var gameWinRoundScreen: GameWinRoundScreen
-    private lateinit var gameWinScreen: GameWinScreen
+    private lateinit var gameGravityWinRoundScreen: GameGravityWinRoundScreen
+    private lateinit var gameWinGravityScreen: GameWinGravityScreen
     private lateinit var levelsScreen: LevelsScreen
-    val viewModel = GameViewModel()
+    val viewModel = GameGravityViewModel()
     override fun create() {
 
         /**
@@ -36,21 +36,21 @@ class MyGame(
 
         viewModel.setParamsForLevel()
 
-        gameOverScreen = GameOverScreen(
+        gameOverGravityScreen = GameOverGravityScreen(
             onRestart =  {
-                setScreen(gameScreen)
+                setScreen(gameGravityScreen)
             },
             onMenu = {
                 getScreen().pause()
                 setScreen(menuScreen)
             }
         )
-        gameScreen = GameScreen(
+        gameGravityScreen = GameGravityScreen(
             viewModel = viewModel,
-            onGameOver = { setScreen(gameOverScreen) },
+            onGameOver = { setScreen(gameOverGravityScreen) },
             onWin = {
                 if (viewModel.currentLevel == 5) {
-                    setScreen(gameWinScreen)
+                    setScreen(gameWinGravityScreen)
                 } else {
                     viewModel.currentLevel++
                     if (viewModel.currentLevel > viewModel.maxLevel) {
@@ -58,26 +58,28 @@ class MyGame(
                         onSaveLevel(viewModel.maxLevel)
                     }
                     viewModel.setParamsForLevel()
-                    setScreen(gameWinRoundScreen)
+                    setScreen(gameGravityWinRoundScreen)
                 }
             }
         )
         menuScreen = MenuScreen(
-            onStart = { setScreen((gameScreen)) },
+            onStart = { setScreen((gameGravityScreen)) },
             onLevel = { setScreen(levelsScreen) }
         )
 
-        gameWinRoundScreen = GameWinRoundScreen(
+        gameGravityWinRoundScreen = GameGravityWinRoundScreen(
             onNext = {
-                setScreen(gameScreen)
+                setScreen(gameGravityScreen)
                      },
             onMenu = {  setScreen(menuScreen)}
         )
 
-        gameWinScreen = GameWinScreen(
+        gameWinGravityScreen = GameWinGravityScreen(
             onRestart = {
                 viewModel.currentLevel = 1
+                viewModel.maxLevel = 1
                 viewModel.setParamsForLevel()
+                setScreen(menuScreen)
             },
             onMenu = {
                 setScreen(menuScreen)
@@ -87,7 +89,7 @@ class MyGame(
         levelsScreen = LevelsScreen(viewModel) {
             viewModel.currentLevel = it
             viewModel.setParamsForLevel()
-            setScreen(gameScreen)
+            setScreen(gameGravityScreen)
         }
 
         setScreen(menuScreen)

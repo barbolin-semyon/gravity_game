@@ -1,4 +1,4 @@
-package com.mygdx.game
+package com.mygdx.gravity_game
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.InputProcessor
@@ -12,32 +12,32 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Vector3
 
 /**
- * Класс экрана победы.
- * На вход получает функции [onRestart] и [onMenu], которые вызываются при нажатии на кнопки
+ * Экран проигрыша. На вход принимает функции для перезапуска и возврата в меню.
+ * Имеет кнопки перезапуска и возврата в меню
  *
  * Наследуется от [Screen] и [InputProcessor], переоределяет методы [show], [render], [resize], [dispose]
- *  * а также переопределяет методы [keyDown], [keyUp], [keyTyped], [touchDown], [touchUp], [touchDragged], [mouseMoved], [scrolled]
- *  *
- *  * Мы используем в основном методы:
- *  * [show] - вызывается при открытии экрана
- *  * [render] - вызывается каждый кадр
- *  * [dispose]  - вызывается при закрытии экрана
- *  * [hide] - вызывается при закрытии экрана
- *  * [onTouchDown] - вызывается при нажатии на экран
- *  */
-class GameWinScreen(
+ * а также переопределяет методы [keyDown], [keyUp], [keyTyped], [touchDown], [touchUp], [touchDragged], [mouseMoved], [scrolled]
+ *
+ * Мы используем в основном методы:
+ * [show] - вызывается при открытии экрана
+ * [render] - вызывается каждый кадр
+ * [dispose]  - вызывается при закрытии экрана
+ * [hide] - вызывается при закрытии экрана
+ * [onTouchDown] - вызывается при нажатии на экран
+ */
+class GameOverGravityScreen(
     val onRestart: () -> Unit,
     val onMenu: () -> Unit
 ) : Screen, InputProcessor {
     private var batch: SpriteBatch = SpriteBatch()
     private var font: BitmapFont = BitmapFont()
-    private var backgroundTexture: Texture = Texture(Gdx.files.internal("win_game_background.png"))
-    private var music: Music = Gdx.audio.newMusic(Gdx.files.internal("win.mp3"))
+    private var backgroundTexture: Texture = Texture(Gdx.files.internal("game_over_background.png"))
+    private var music: Music = Gdx.audio.newMusic(Gdx.files.internal("game_over_sound.mp3"))
 
-    var buttonMenuTexture = Texture(Gdx.files.internal("button_menu.png"))
+    var buttonMenuTexture = Texture(Gdx.files.internal("menu_button.png"))
     val buttonMenuSprite = Sprite(buttonMenuTexture)
 
-    var buttonRestartTexture = Texture(Gdx.files.internal("button_restart.png"))
+    var buttonRestartTexture = Texture(Gdx.files.internal("restart_button.png"))
     val buttonRestartSprite = Sprite(buttonRestartTexture)
 
     val centerY = Gdx.graphics.height / 2f  - buttonMenuSprite.height / 2f// Расположение по центру по оси Y

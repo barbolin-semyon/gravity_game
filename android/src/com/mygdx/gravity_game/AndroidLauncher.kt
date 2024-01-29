@@ -1,7 +1,6 @@
-package com.mygdx.game
+package com.mygdx.gravity_game
 
 import android.os.Bundle
-import android.preference.PreferenceManager
 import com.badlogic.gdx.backends.android.AndroidApplication
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration
 

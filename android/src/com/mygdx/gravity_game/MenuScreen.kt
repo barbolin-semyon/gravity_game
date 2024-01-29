@@ -1,10 +1,9 @@
-package com.mygdx.game
+package com.mygdx.gravity_game
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.InputProcessor
 import com.badlogic.gdx.Screen
 import com.badlogic.gdx.graphics.Texture
-import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Vector3
@@ -29,18 +28,15 @@ class MenuScreen(
 ) : Screen, InputProcessor {
     private var batch: SpriteBatch = SpriteBatch()
 
-    private var backgroundTexture: Texture = Texture(Gdx.files.internal("background_menu.png"))
-    val buttonTexture = Texture(Gdx.files.internal("button_start.png"))
+    private var backgroundTexture: Texture = Texture(Gdx.files.internal("menu_background.png"))
+    val buttonTexture = Texture(Gdx.files.internal("start_button.png"))
     val buttonSprite = Sprite(buttonTexture)
 
-    val buttonLevelsTexture = Texture(Gdx.files.internal("button_levels.png"))
+    val buttonLevelsTexture = Texture(Gdx.files.internal("levels_button.png"))
     val buttonLevelsSprite = Sprite(buttonLevelsTexture)
 
     val centerY = Gdx.graphics.height / 2f  - buttonSprite.height / 2f// Расположение по центру по оси Y
     val centerX = Gdx.graphics.width / 2f - buttonSprite.width / 2f // Расположение по центру по оси X
-
-    init {
-    }
 
     override fun show() {
         Gdx.input.inputProcessor = this
@@ -70,6 +66,7 @@ class MenuScreen(
     }
 
     override fun hide() {
+        Gdx.input.inputProcessor = null
     }
 
     override fun dispose() {

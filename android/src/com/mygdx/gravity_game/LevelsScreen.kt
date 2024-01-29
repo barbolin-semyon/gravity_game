@@ -1,4 +1,4 @@
-package com.mygdx.game
+package com.mygdx.gravity_game
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.InputProcessor
@@ -10,7 +10,7 @@ import com.badlogic.gdx.math.Vector3
 
 /**
  * Класс экрана выбора уроня.
- * На вход получает [GameViewModel] и [onSetLevel] - функцию для установки уровня
+ * На вход получает [GameGravityViewModel] и [onSetLevel] - функцию для установки уровня
  *
  * Наследуется от [Screen] и [InputProcessor], переоределяет методы [show], [render], [resize], [dispose]
  *  * а также переопределяет методы [keyDown], [keyUp], [keyTyped], [touchDown], [touchUp], [touchDragged], [mouseMoved], [scrolled]
@@ -22,11 +22,11 @@ import com.badlogic.gdx.math.Vector3
  *  * [hide] - вызывается при закрытии экрана
  *  * [onTouchDown] - вызывается при нажатии на экран
  *  */
-class LevelsScreen(val viewModel: GameViewModel, val onSetLevel: (Int) -> Unit) : Screen,
+class LevelsScreen(val viewModel: GameGravityViewModel, val onSetLevel: (Int) -> Unit) : Screen,
     InputProcessor {
     private var batch: SpriteBatch = SpriteBatch()
 
-    private var backgroundTexture: Texture = Texture(Gdx.files.internal("background_menu.png"))
+    private var backgroundTexture: Texture = Texture(Gdx.files.internal("background.png"))
     val button1Texture = Texture(Gdx.files.internal("1.png"))
     val button1Sprite = Sprite(button1Texture)
 

@@ -1,4 +1,4 @@
-package com.mygdx.game
+package com.mygdx.gravity_game
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.InputProcessor
@@ -12,8 +12,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Vector3
 
 /**
- * Класс экрана победы в раунде.
- * На вход получает функции [onNext] и [onMenu], которые вызываются при нажатии на кнопки
+ * Класс экрана победы.
+ * На вход получает функции [onRestart] и [onMenu], которые вызываются при нажатии на кнопки
  *
  * Наследуется от [Screen] и [InputProcessor], переоределяет методы [show], [render], [resize], [dispose]
  *  * а также переопределяет методы [keyDown], [keyUp], [keyTyped], [touchDown], [touchUp], [touchDragged], [mouseMoved], [scrolled]
@@ -25,20 +25,20 @@ import com.badlogic.gdx.math.Vector3
  *  * [hide] - вызывается при закрытии экрана
  *  * [onTouchDown] - вызывается при нажатии на экран
  *  */
-class GameWinRoundScreen(
-    val onNext: () -> Unit,
+class GameWinGravityScreen(
+    val onRestart: () -> Unit,
     val onMenu: () -> Unit
 ) : Screen, InputProcessor {
     private var batch: SpriteBatch = SpriteBatch()
     private var font: BitmapFont = BitmapFont()
-    private var backgroundTexture: Texture = Texture(Gdx.files.internal("background_win_round.png"))
-    private var music: Music = Gdx.audio.newMusic(Gdx.files.internal("win_round.mp3"))
+    private var backgroundTexture: Texture = Texture(Gdx.files.internal("win_game_background.png"))
+    private var music: Music = Gdx.audio.newMusic(Gdx.files.internal("win_sound.mp3"))
 
-    var buttonMenuTexture = Texture(Gdx.files.internal("button_menu.png"))
+    var buttonMenuTexture = Texture(Gdx.files.internal("menu_button.png"))
     val buttonMenuSprite = Sprite(buttonMenuTexture)
 
-    var buttonNextTexture = Texture(Gdx.files.internal("button_next.png"))
-    val buttonNextSprite = Sprite(buttonNextTexture)
+    var buttonRestartTexture = Texture(Gdx.files.internal("restart_button.png"))
+    val buttonRestartSprite = Sprite(buttonRestartTexture)
 
     val centerY = Gdx.graphics.height / 2f  - buttonMenuSprite.height / 2f// Расположение по центру по оси Y
     val centerX = Gdx.graphics.width / 2f - buttonMenuSprite.width / 2f // Расположение по центру по оси X
@@ -64,8 +64,8 @@ class GameWinRoundScreen(
             Gdx.graphics.height.toFloat()
         )
 
-        batch.draw(buttonNextSprite, centerX, centerY)
-        batch.draw(buttonMenuSprite, centerX, centerY - buttonNextSprite.height)
+        batch.draw(buttonRestartSprite, centerX, centerY)
+        batch.draw(buttonMenuSprite, centerX, centerY - buttonRestartSprite.height)
         batch.end()
 
         /*if (Gdx.input.isTouched) {
@@ -91,7 +91,7 @@ class GameWinRoundScreen(
         batch.dispose()
         font.dispose()
         backgroundTexture.dispose()
-        buttonNextTexture.dispose()
+        buttonRestartTexture.dispose()
         buttonMenuTexture.dispose()
     }
 
@@ -109,16 +109,16 @@ class GameWinRoundScreen(
 
     override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
         val touchPoint = Vector3(screenX.toFloat(), screenY.toFloat(), 0f)
-        val rect = buttonNextSprite.boundingRectangle
+        val rect = buttonRestartSprite.boundingRectangle
         rect.x = centerX
         rect.y = centerY
         if (rect.contains(touchPoint.x, touchPoint.y)) {
-            onNext()
+            onRestart()
         }
 
         val rectMenu = buttonMenuSprite.boundingRectangle
         rectMenu.x = centerX
-        rectMenu.y = centerY + buttonNextSprite.height
+        rectMenu.y = centerY + buttonRestartSprite.height
         if (rectMenu.contains(touchPoint.x, touchPoint.y)) {
             onMenu()
         }

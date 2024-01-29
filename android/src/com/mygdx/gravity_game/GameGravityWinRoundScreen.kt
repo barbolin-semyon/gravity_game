@@ -1,4 +1,4 @@
-package com.mygdx.game
+package com.mygdx.gravity_game
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.InputProcessor
@@ -12,33 +12,33 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Vector3
 
 /**
- * Экран проигрыша. На вход принимает функции для перезапуска и возврата в меню.
- * Имеет кнопки перезапуска и возврата в меню
+ * Класс экрана победы в раунде.
+ * На вход получает функции [onNext] и [onMenu], которые вызываются при нажатии на кнопки
  *
  * Наследуется от [Screen] и [InputProcessor], переоределяет методы [show], [render], [resize], [dispose]
- * а также переопределяет методы [keyDown], [keyUp], [keyTyped], [touchDown], [touchUp], [touchDragged], [mouseMoved], [scrolled]
- *
- * Мы используем в основном методы:
- * [show] - вызывается при открытии экрана
- * [render] - вызывается каждый кадр
- * [dispose]  - вызывается при закрытии экрана
- * [hide] - вызывается при закрытии экрана
- * [onTouchDown] - вызывается при нажатии на экран
- */
-class GameOverScreen(
-    val onRestart: () -> Unit,
+ *  * а также переопределяет методы [keyDown], [keyUp], [keyTyped], [touchDown], [touchUp], [touchDragged], [mouseMoved], [scrolled]
+ *  *
+ *  * Мы используем в основном методы:
+ *  * [show] - вызывается при открытии экрана
+ *  * [render] - вызывается каждый кадр
+ *  * [dispose]  - вызывается при закрытии экрана
+ *  * [hide] - вызывается при закрытии экрана
+ *  * [onTouchDown] - вызывается при нажатии на экран
+ *  */
+class GameGravityWinRoundScreen(
+    val onNext: () -> Unit,
     val onMenu: () -> Unit
 ) : Screen, InputProcessor {
     private var batch: SpriteBatch = SpriteBatch()
     private var font: BitmapFont = BitmapFont()
-    private var backgroundTexture: Texture = Texture(Gdx.files.internal("background_game_over.png"))
-    private var music: Music = Gdx.audio.newMusic(Gdx.files.internal("game_over.mp3"))
+    private var backgroundTexture: Texture = Texture(Gdx.files.internal("win_round_background.png"))
+    private var music: Music = Gdx.audio.newMusic(Gdx.files.internal("win_round.mp3"))
 
-    var buttonMenuTexture = Texture(Gdx.files.internal("button_menu.png"))
+    var buttonMenuTexture = Texture(Gdx.files.internal("menu_button.png"))
     val buttonMenuSprite = Sprite(buttonMenuTexture)
 
-    var buttonRestartTexture = Texture(Gdx.files.internal("button_restart.png"))
-    val buttonRestartSprite = Sprite(buttonRestartTexture)
+    var buttonNextTexture = Texture(Gdx.files.internal("next_levels_button.png"))
+    val buttonNextSprite = Sprite(buttonNextTexture)
 
     val centerY = Gdx.graphics.height / 2f  - buttonMenuSprite.height / 2f// Расположение по центру по оси Y
     val centerX = Gdx.graphics.width / 2f - buttonMenuSprite.width / 2f // Расположение по центру по оси X
@@ -64,8 +64,8 @@ class GameOverScreen(
             Gdx.graphics.height.toFloat()
         )
 
-        batch.draw(buttonRestartSprite, centerX, centerY)
-        batch.draw(buttonMenuSprite, centerX, centerY - buttonRestartSprite.height)
+        batch.draw(buttonNextSprite, centerX, centerY)
+        batch.draw(buttonMenuSprite, centerX, centerY - buttonNextSprite.height)
         batch.end()
 
         /*if (Gdx.input.isTouched) {
@@ -91,7 +91,7 @@ class GameOverScreen(
         batch.dispose()
         font.dispose()
         backgroundTexture.dispose()
-        buttonRestartTexture.dispose()
+        buttonNextTexture.dispose()
         buttonMenuTexture.dispose()
     }
 
@@ -109,16 +109,16 @@ class GameOverScreen(
 
     override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
         val touchPoint = Vector3(screenX.toFloat(), screenY.toFloat(), 0f)
-        val rect = buttonRestartSprite.boundingRectangle
+        val rect = buttonNextSprite.boundingRectangle
         rect.x = centerX
         rect.y = centerY
         if (rect.contains(touchPoint.x, touchPoint.y)) {
-            onRestart()
+            onNext()
         }
 
         val rectMenu = buttonMenuSprite.boundingRectangle
         rectMenu.x = centerX
-        rectMenu.y = centerY + buttonRestartSprite.height
+        rectMenu.y = centerY + buttonNextSprite.height
         if (rectMenu.contains(touchPoint.x, touchPoint.y)) {
             onMenu()
         }
